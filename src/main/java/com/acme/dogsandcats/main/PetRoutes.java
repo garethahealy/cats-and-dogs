@@ -29,9 +29,9 @@ public class PetRoutes extends RouteBuilder {
                 .bean(petService, "add")
                 .marshal().json(JsonLibrary.Jackson);
 
-        from("direct:getPetById")
+        from("direct:getPetById").id("directGetPetById")
                 .log("hit -> getPetById - ${headers.petId}")
-                .bean(petService, "get")
+                .bean(petService, "get").id("beanGet")
                 .marshal().json(JsonLibrary.Jackson);
 
         from("amqp:queue:incoming")
@@ -40,7 +40,7 @@ public class PetRoutes extends RouteBuilder {
                 .setHeader("petId", simple("${body.getId()}"))
                 .bean(petService, "get")
                 .marshal().json(JsonLibrary.Jackson)
-                .to("amqp:queue:outgoing");
+                .to("{{outgoing.queue}}");
 
         from("amqp:queue:outgoing")
                 .unmarshal().json(JsonLibrary.Jackson, Pet.class)

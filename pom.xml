@@ -97,7 +97,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2</artifactId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
         </dependency>
 
         <!-- AMQ -->
@@ -108,6 +108,11 @@
         <dependency>
             <groupId>org.amqphub.quarkus</groupId>
             <artifactId>quarkus-qpid-jms</artifactId>
+        </dependency>
+        <!-- Needed for dev-services -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-reactive-messaging-amqp</artifactId>
         </dependency>
 
         <!-- Camel Actuators -->
@@ -128,7 +133,27 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-docker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -214,9 +239,6 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <native.image.path>
-                                    ${project.build.directory}/${project.build.finalName}-runner
-                                </native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
@@ -280,6 +302,7 @@
                             <generateModels>true</generateModels>
                             <configOptions>
                                 <sourceFolder>generated</sourceFolder>
+                                <apiPackage>com.acme.dogsandcats.generated.api</apiPackage>
                                 <modelPackage>com.acme.dogsandcats.generated.model</modelPackage>
                                 <openApiNullable>true</openApiNullable>
                             </configOptions>
@@ -295,19 +318,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>native</id>
-            <activation>
-                <property>
-                    <name>native</name>
-                </property>
-            </activation>
-            <properties>
-                <skipITs>false</skipITs>
-                <quarkus.package.type>native</quarkus.package.type>
-            </properties>
-        </profile>
-    </profiles>
 </project>

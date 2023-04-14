@@ -9,11 +9,11 @@ public class PhotoUrl extends PanacheEntity {
 
     public String name;
 
-    public static PhotoUrl findById(Long id){
+    public static PhotoUrl findById(Long id) {
         return find("id", id).firstResult();
     }
 
-    public static PhotoUrl findByName(String name){
+    public static PhotoUrl findByName(String name) {
         return find("name", name).firstResult();
     }
 }

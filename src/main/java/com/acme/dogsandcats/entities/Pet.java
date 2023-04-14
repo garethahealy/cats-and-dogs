@@ -4,7 +4,6 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class Pet extends PanacheEntity {
 
     public StatusEnum status;
 
-    public static Pet findById(Long id){
+    public static Pet findById(Long id) {
         return find("id", id).firstResult();
     }
 }

@@ -9,11 +9,11 @@ public class Tag extends PanacheEntity {
 
     public String name;
 
-    public static Tag findById(Long id){
+    public static Tag findById(Long id) {
         return find("id", id).firstResult();
     }
 
-    public static Tag findByName(String name){
+    public static Tag findByName(String name) {
         return find("name", name).firstResult();
     }
 }
