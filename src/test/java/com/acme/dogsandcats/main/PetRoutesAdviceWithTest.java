@@ -12,8 +12,6 @@ import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -23,6 +21,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @QuarkusTest
 @TestProfile(PetRoutesAdviceWithTest.class)
 public class PetRoutesAdviceWithTest extends CamelQuarkusTestSupport {
+
     @EndpointInject(value = "direct:getPetById")
     private ProducerTemplate endpoint;
 
@@ -32,12 +31,12 @@ public class PetRoutesAdviceWithTest extends CamelQuarkusTestSupport {
     }
 
     private void setupAdviceWith() throws Exception {
-        AdviceWith.adviceWith(context, "directGetPetById", a ->
-                a.weaveById("beanGet")
+        AdviceWith.adviceWith(context, "directGetPetById", builder ->
+                builder.weaveById("beanGet")
                         .replace()
                         .bean(new OnlyGetPetService(), "get")
         );
-        
+
         context.start();
     }
 

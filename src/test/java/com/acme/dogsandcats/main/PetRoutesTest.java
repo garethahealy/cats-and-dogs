@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
-public class PetRoutesTest {
+class PetRoutesTest {
     @EndpointInject(value = "direct:addPet")
     private ProducerTemplate addPetEndpoint;
     @EndpointInject(value = "amqp:queue:incoming")
