@@ -1,5 +1,7 @@
 package com.acme.dogsandcats.main;
 
+import com.acme.dogsandcats.generated.model.Pet;
+import io.quarkus.test.common.DevServicesContext;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.vertx.core.json.JsonObject;
@@ -13,12 +15,17 @@ import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.qpid.jms.JmsConnectionFactory;
 import org.junit.jupiter.api.Test;
 
+import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
+import javax.jms.Queue;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -30,8 +37,39 @@ class PetRoutesIT {
     @TestHTTPResource("/v3/pet")
     URL url;
 
+    DevServicesContext devServicesContext;
+
     @Test
-    void testAdd() throws IOException, InterruptedException {
+    void testAdd() throws IOException {
+        Pair<String, Integer> response = add();
+
+        assertThat(response, notNullValue());
+        assertThat(response.getKey(), notNullValue());
+        assertThat(response.getValue(), notNullValue());
+        assertThat(response.getValue(), equalTo(HttpStatus.SC_OK));
+
+        assertThat(new JsonObject(response.getKey()).mapTo(Pet.class), notNullValue());
+    }
+
+    @Test
+    void testIncoming() throws IOException, InterruptedException {
+        Map<String, String> props = devServicesContext.devServicesProperties();
+        String mappedPort = props.get("amqp-mapped-port");
+
+        Pair<String, Integer> addResponse = add();
+
+        JmsConnectionFactory jmsConnectionFactory = new JmsConnectionFactory(String.format("amqp://localhost:%s", mappedPort));
+        try (JMSContext context = jmsConnectionFactory.createContext()) {
+            Queue incomingDestination = context.createQueue("incoming");
+            JMSProducer producer = context.createProducer();
+
+            producer.send(incomingDestination, addResponse.getKey());
+        }
+    }
+
+    private Pair<String, Integer> add() throws IOException {
+        Pair<String, Integer> answer;
+
         File file = new File(getClass().getClassLoader().getResource("doggie.json").getFile());
         String jsonStr = IOUtils.toString(new FileReader(file));
         JsonObject jsonObj = new JsonObject(jsonStr);
@@ -55,14 +93,16 @@ class PetRoutesIT {
                 }
             };
 
-            Pair<String, Integer> response = httpclient.execute(request, responseHandler);
-
-            assertThat(response, notNullValue());
-            assertThat(response.getKey(), notNullValue());
-            assertThat(response.getValue(), notNullValue());
-            assertThat(response.getValue(), equalTo(HttpStatus.SC_OK));
-
-            Thread.sleep(10000);
+            answer = httpclient.execute(request, responseHandler);
         }
+
+        return answer;
+    }
+
+    private JsonObject getDoggieJson() throws IOException {
+        File file = new File(getClass().getClassLoader().getResource("doggie.json").getFile());
+        String jsonStr = IOUtils.toString(new FileReader(file));
+
+        return new JsonObject(jsonStr);
     }
 }
