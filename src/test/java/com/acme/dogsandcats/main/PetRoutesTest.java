@@ -2,14 +2,12 @@ package com.acme.dogsandcats.main;
 
 import com.acme.dogsandcats.generated.model.Pet;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.vertx.core.json.JsonObject;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -24,12 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
-//@TestProfile(PetRoutesTest.class)
-public class PetRoutesTest {//extends CamelQuarkusTestSupport {
-    public PetRoutesTest() {
-        super();
-    }
-
+public class PetRoutesTest {
     @EndpointInject(value = "direct:addPet")
     private ProducerTemplate addPetEndpoint;
     @EndpointInject(value = "amqp:queue:incoming")
