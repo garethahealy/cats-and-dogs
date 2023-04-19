@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cats-and-dogs.fullname" . }}
+  annotations:
+    discovery.3scale.net/scheme: "http"
+    discovery.3scale.net/port: '8080'
+    discovery.3scale.net/description-path: "/openapi"
+  labels:
+    discovery.3scale.net: "true"
+    {{- include "cats-and-dogs.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+      name: tcp
+  selector:
+    {{- include "cats-and-dogs.selectorLabels" . | nindent 4 }}

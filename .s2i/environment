@@ -1,0 +1,5 @@
+MAVEN_S2I_ARTIFACT_DIRS=target/quarkus-app
+S2I_SOURCE_DEPLOYMENTS_FILTER=app lib quarkus quarkus-run.jar
+JAVA_OPTS_APPEND=-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+JAVA_APP_JAR=/deployments/quarkus-run.jar
+MAVEN_ARGS_APPEND=-Dquarkus.container-image.build=false

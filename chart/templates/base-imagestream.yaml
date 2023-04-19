@@ -1,0 +1,26 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: openjdk-17-runtime
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: "1.14"
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/ubi9/openjdk-17-runtime:1.14
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: openjdk-17
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: "1.14"
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/ubi9/openjdk-17:1.14

@@ -1,0 +1,34 @@
+# Default values for cats-and-dogs.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# BuildConfig git source
+git:
+  uri: https://github.com/garethahealy/cats-and-dogs.git
+  ref: advicewith
+
+# Deployment image
+image_repository: image-registry.openshift-image-registry.svc:5000
+image_namespace: jenkins
+image_name: v1-cats-and-dogs-source
+image_version: latest
+
+# Deployment/HPA replica
+replicas:
+  min: 1
+  max: 3
+
+# Route
+route: true
+
+# PDB
+pdb: false
+
+# HPA
+hpa:
+  enabled: false
+  cpuTarget: 200m
+  memTarget: 300Mi
+
+# ServiceMonitor
+servicemonitor: true

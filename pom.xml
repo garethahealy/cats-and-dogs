@@ -113,7 +113,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-reactive-messaging-amqp</artifactId>
-            <version>999-SNAPSHOT</version>
         </dependency>
 
         <!-- Camel Actuators -->

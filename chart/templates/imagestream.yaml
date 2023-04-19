@@ -1,0 +1,12 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: "{{ include "cats-and-dogs.fullname" . }}-source"
+spec: {}
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: "{{ include "cats-and-dogs.fullname" . }}-docker"
+spec: {}

@@ -1,0 +1,18 @@
+{{- if .Values.servicemonitor }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "cats-and-dogs.fullname" . }}
+  labels:
+    {{- include "cats-and-dogs.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - interval: 30s
+      port: tcp
+      scheme: http
+      path: /q/metrics
+  selector:
+    matchLabels:
+    {{- include "cats-and-dogs.labels" . | nindent 6 }}
+{{- end }}

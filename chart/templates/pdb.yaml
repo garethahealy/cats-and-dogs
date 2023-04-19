@@ -1,0 +1,14 @@
+{{- if .Values.pdb }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "cats-and-dogs.fullname" . }}
+  labels:
+    {{- include "cats-and-dogs.labels" . | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      deployment: {{ include "cats-and-dogs.fullname" . }}
+{{ end }}
