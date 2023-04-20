@@ -5,12 +5,12 @@
 # BuildConfig git source
 git:
   uri: https://github.com/garethahealy/cats-and-dogs.git
-  ref: advicewith
+  ref: main
 
 # Deployment image
 image_repository: image-registry.openshift-image-registry.svc:5000
-image_namespace: jenkins
-image_name: v1-cats-and-dogs-source
+image_namespace: tekton
+image_name: v1-cats-and-dogs
 image_version: latest
 
 # Deployment/HPA replica
@@ -31,4 +31,4 @@ hpa:
   memTarget: 300Mi
 
 # ServiceMonitor
-servicemonitor: true
+servicemonitor: false

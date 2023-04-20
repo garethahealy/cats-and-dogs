@@ -1,0 +1,98 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-deploy
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+  params:
+    - name: git-url
+      type: string
+      description: url of the git repo for the code of deployment
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: "main"
+    - name: IMAGE
+      type: string
+      description: image to be built from the code
+      default: "image-registry.openshift-image-registry.svc:5000/tekton/v1-cats-and-dogs:latest"
+    - name: DOCKERFILE
+      type: string
+      description: Dockerfile location
+      default: "src/main/docker/Dockerfile.jvm"
+    - name: CHART_DIR
+      type: string
+      description: Helm chart location
+      default: "chart/"
+    - name: HELM_RELEASE
+      type: string
+      description: Helm release name
+      default: "v1"
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: maven-run
+      taskRef:
+        name: maven
+        kind: ClusterTask
+      params:
+        - name: CONTEXT_DIR
+          value: "."
+        - name: GOALS
+          value:
+            - clean
+            - install
+            - -DskipTests
+            - -Dquarkus.container-image.build=false
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-settings
+          workspace: maven-settings
+      runAfter:
+        - fetch-repository
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      runAfter:
+        - maven-run
+    - name: helm-upgrade
+      taskRef:
+        name: helm-upgrade-from-source
+        kind: ClusterTask
+      params:
+        - name: charts_dir
+          value: $(params.CHART_DIR)
+        - name: release_name
+          value: $(params.HELM_RELEASE)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      runAfter:
+        - build-image
