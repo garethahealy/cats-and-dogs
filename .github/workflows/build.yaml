@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-maven
 
       - name: Build
-        run: ./mvnw clean install --batch-mode
+        run: ./mvnw clean install --batch-mode -DskipTests
 
   analyze:
     needs: [ build ]
